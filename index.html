@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love Calculator</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState } = React;
+    const { Heart, Sparkles } = lucide;
+
+    function LoveCalculator() {
+      const [name1, setName1] = useState('');
+      const [name2, setName2] = useState('');
+      const [month1, setMonth1] = useState('');
+      const [month2, setMonth2] = useState('');
+      const [result, setResult] = useState(null);
+      const [calculating, setCalculating] = useState(false);
+
+      const zodiacSigns = {
+        january: 'Capricorn/Aquarius',
+        february: 'Aquarius/Pisces',
+        march: 'Pisces/Aries',
+        april: 'Aries/Taurus',
+        may: 'Taurus/Gemini',
+        june: 'Gemini/Cancer',
+        july: 'Cancer/Leo',
+        august: 'Leo/Virgo',
+        september: 'Virgo/Libra',
+        october: 'Libra/Scorpio',
+        november: 'Scorpio/Sagittarius',
+        december: 'Sagittarius/Capricorn'
+      };
+
+      const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+
+      const funMessages = [
+        "The stars have aligned for you two!",
+        "Cosmic forces are at work here!",
+        "The universe has spoken!",
+        "Destiny has calculated your match!",
+        "The love gods have decided!",
+        "Ancient algorithms reveal...",
+        "The chemistry is undeniable!"
+      ];
+
+      const saveToDatabase = async (data) => {
+        try {
+          // REPLACE THIS WITH YOUR GOOGLE SCRIPT URL FROM STEP 1
+          const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfch4r2wpzNHLoQdWU8HItXpKRC7m99WehGYzacuUb59vhStV_RCGpru_VNUr6hHXl/exec';
+          
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+          });
+          
+          console.log('Data saved successfully');
+          return true;
+        } catch (error) {
+          console.error('Error saving to database:', error);
+          return false;
+        }
+      };
+
+      const calculateLove = async () => {
+        if (!name1 || !name2 || !month1 || !month2) {
+          alert('Please fill in all fields!');
+          return;
+        }
+
+        setCalculating(true);
+
+        const timestamp = new Date().toISOString();
+        const dataToSave = {
+          person1_name: name1,
+          person2_name: name2,
+          person1_month: month1,
+          person2_month: month2,
+          timestamp: timestamp,
+          user_agent: navigator.userAgent
+        };
+        
+        saveToDatabase(dataToSave);
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const percentage = Math.floor(Math.random() * 50) + 50;
+        const zodiac1 = zodiacSigns[month1.toLowerCase()];
+        const zodiac2 = zodiacSigns[month2.toLowerCase()];
+        const message = funMessages[Math.floor(Math.random() * funMessages.length)];
+
+        setResult({
+          percentage,
+          zodiac1,
+          zodiac2,
+          message
+        });
+
+        setCalculating(false);
+      };
+
+      const reset = () => {
+        setName1('');
+        setName2('');
+        setMonth1('');
+        setMonth2('');
+        setResult(null);
+      };
+
+      return React.createElement('div', {
+        className: "min-h-screen bg-gradient-to-br from-pink-400 via-purple-400 to-red-400 flex items-center justify-center p-4"
+      },
+        React.createElement('div', {
+          className: "bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full"
+        },
+          React.createElement('div', {
+            className: "text-center mb-6"
+          },
+            React.createElement(Heart, {
+              className: "w-16 h-16 text-red-500 mx-auto mb-3",
+              style: { animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+            }),
+            React.createElement('h1', {
+              className: "text-4xl font-bold text-gray-800 mb-2"
+            }, "Love Calculator"),
+            React.createElement('p', {
+              className: "text-gray-600"
+            }, "Discover your true compatibility!")
+          ),
+
+          !result ? 
+            React.createElement('div', { className: "space-y-4" },
+              React.createElement('div', null,
+                React.createElement('label', {
+                  className: "block text-sm font-medium text-gray-700 mb-2"
+                }, "Your Name"),
+                React.createElement('input', {
+                  type: "text",
+                  value: name1,
+                  onChange: (e) => setName1(e.target.value),
+                  className: "w-full px-4 py-3 border-2 border-pink-300 rounded-lg focus:outline-none focus:border-pink-500 transition",
+                  placeholder: "Enter your name"
+                })
+              ),
+
+              React.createElement('div', null,
+                React.createElement('label', {
+                  className: "block text-sm font-medium text-gray-700 mb-2"
+                }, "Your Birth Month"),
+                React.createElement('select', {
+                  value: month1,
+                  onChange: (e) => setMonth1(e.target.value),
+                  className: "w-full px-4 py-3 border-2 border-pink-300 rounded-lg focus:outline-none focus:border-pink-500 transition"
+                },
+                  React.createElement('option', { value: "" }, "Select month"),
+                  months.map(m => React.createElement('option', { key: m, value: m }, m))
+                )
+              ),
+
+              React.createElement('div', {
+                className: "flex items-center justify-center py-2"
+              },
+                React.createElement(Heart, { className: "w-6 h-6 text-red-400" })
+              ),
+
+              React.createElement('div', null,
+                React.createElement('label', {
+                  className: "block text-sm font-medium text-gray-700 mb-2"
+                }, "Crush's Name"),
+                React.createElement('input', {
+                  type: "text",
+                  value: name2,
+                  onChange: (e) => setName2(e.target.value),
+                  className: "w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:outline-none focus:border-purple-500 transition",
+                  placeholder: "Enter their name"
+                })
+              ),
+
+              React.createElement('div', null,
+                React.createElement('label', {
+                  className: "block text-sm font-medium text-gray-700 mb-2"
+                }, "Their Birth Month"),
+                React.createElement('select', {
+                  value: month2,
+                  onChange: (e) => setMonth2(e.target.value),
+                  className: "w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:outline-none focus:border-purple-500 transition"
+                },
+                  React.createElement('option', { value: "" }, "Select month"),
+                  months.map(m => React.createElement('option', { key: m, value: m }, m))
+                )
+              ),
+
+              React.createElement('button', {
+                onClick: calculateLove,
+                disabled: calculating,
+                className: "w-full bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold py-4 rounded-lg hover:from-pink-600 hover:to-red-600 transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              },
+                calculating ? 
+                  React.createElement(React.Fragment, null,
+                    React.createElement('div', {
+                      className: "w-5 h-5 border-2 border-white border-t-transparent rounded-full",
+                      style: { animation: 'spin 1s linear infinite' }
+                    }),
+                    "Calculating..."
+                  ) :
+                  React.createElement(React.Fragment, null,
+                    React.createElement(Sparkles, { className: "w-5 h-5" }),
+                    "Calculate Love"
+                  )
+              )
+            ) :
+            React.createElement('div', { className: "text-center space-y-6" },
+              React.createElement('div', {
+                className: "bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-6"
+              },
+                React.createElement('p', {
+                  className: "text-gray-700 mb-3 font-medium"
+                }, result.message),
+                
+                React.createElement('div', { className: "space-y-2 mb-4" },
+                  React.createElement('p', {
+                    className: "text-sm text-gray-600"
+                  },
+                    React.createElement('span', {
+                      className: "font-semibold"
+                    }, name1),
+                    ` (${result.zodiac1})`
+                  ),
+                  React.createElement(Heart, {
+                    className: "w-6 h-6 text-red-500 mx-auto"
+                  }),
+                  React.createElement('p', {
+                    className: "text-sm text-gray-600"
+                  },
+                    React.createElement('span', {
+                      className: "font-semibold"
+                    }, name2),
+                    ` (${result.zodiac2})`
+                  )
+                ),
+
+                React.createElement('div', { className: "relative pt-6" },
+                  React.createElement('div', {
+                    className: "text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-red-500",
+                    style: { animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+                  }, `${result.percentage}%`),
+                  React.createElement('p', {
+                    className: "text-gray-600 mt-2"
+                  }, "Love Match!")
+                )
+              ),
+
+              React.createElement('div', {
+                className: "bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4"
+              },
+                React.createElement('p', {
+                  className: "text-sm text-yellow-800 font-medium"
+                }, "😄 Just kidding! This is completely random."),
+                React.createElement('p', {
+                  className: "text-xs text-yellow-700 mt-1"
+                }, "Real love isn't calculated by algorithms!")
+              ),
+
+              React.createElement('button', {
+                onClick: reset,
+                className: "w-full bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition"
+              }, "Try Again")
+            ),
+
+          React.createElement('div', {
+            className: "mt-6 text-center text-xs text-gray-500"
+          },
+            React.createElement('p', null, "⚠️ For entertainment purposes only!")
+          )
+        )
+      );
+    }
+
+    ReactDOM.render(
+      React.createElement(LoveCalculator),
+      document.getElementById('root')
+    );
+  </script>
+
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+  </style>
+</body>
+</html>
