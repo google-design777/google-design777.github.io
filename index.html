@@ -88,11 +88,24 @@
 
       const specialMessage = "✨ PERFECT MATCH! The universe has blessed this union! ✨";
 
-      // Check if crush name matches special names
+      // List of special names
+      const specialNames = [
+        'ariyan ahmed',
+        'ariyan',
+        'aryan',
+        'nadia',
+        'nadia bahar'
+      ];
+
+      // Check if a name is in the special list
       const isSpecialName = (name) => {
         const normalizedName = name.trim().toLowerCase();
-        const specialNames = ['ariyan', 'aryan', 'ariyan ahmed', 'aryan ahmed'];
         return specialNames.includes(normalizedName);
+      };
+
+      // Check if BOTH names are special
+      const areBothSpecial = (person1, person2) => {
+        return isSpecialName(person1) && isSpecialName(person2);
       };
 
       const saveToDatabase = async (data) => {
@@ -155,11 +168,11 @@
         // Simulate calculation time
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Check if crush name is special - give 100%
+        // Check if BOTH names are special - give 100%
         let percentage;
         let message;
         
-        if (isSpecialName(name2)) {
+        if (areBothSpecial(name1, name2)) {
           percentage = 100;
           message = specialMessage;
         } else {
@@ -336,7 +349,7 @@
               },
                 React.createElement('p', {
                   className: "text-sm text-yellow-800 font-medium"
-                }, "😄 Just kidding! This is completely random. Try Sharing with your friends 😁"),
+                }, "😄 Just kidding! This is completely random."),
                 React.createElement('p', {
                   className: "text-xs text-yellow-700 mt-1"
                 }, "Real love isn't calculated by algorithms!")
@@ -351,7 +364,7 @@
           React.createElement('div', {
             className: "mt-6 text-center text-xs text-gray-500"
           },
-            React.createElement('p', null, "❤️")
+            React.createElement('p', null, "⚠️ For entertainment purposes only!")
           )
         )
       );
